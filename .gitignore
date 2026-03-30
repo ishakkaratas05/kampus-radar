@@ -1,0 +1,29 @@
+# --- KÜTÜPHANELER (Web, Mobile ve Backend ortak) ---
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# --- GİZLİ BİLGİLER VE ŞİFRELER ---
+.env
+.env.*
+!.env.example
+
+# --- WEB (React / Vite Build Çıktıları) ---
+dist/
+build/
+out/
+
+# --- MOBİL (Expo / React Native) ---
+.expo/
+ios/
+android/
+*.jks
+*.keystore
+
+# --- İŞLETİM SİSTEMİ ÇÖPLERİ ---
+.DS_Store
+Thumbs.db
+
+# --- EDİTÖR/IDE KLASÖRLERİ ---
+.vscode/
+.idea/

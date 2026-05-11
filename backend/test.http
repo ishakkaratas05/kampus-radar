@@ -1,0 +1,20 @@
+### REST Client değişkenleri
+@baseUrl = http://localhost:4000
+
+### 1) API ayakta mı?
+GET {{baseUrl}}/api/health
+
+### 2) 401 çoğunlukla DB'deki hash ile gönderilen şifre uyuşmuyor. Hızlı düzeltme (aynı .env DB):
+###    npm run set-password -- mail@gmail.com admin123
+### Tanı: npm run debug-login -- mail@gmail.com admin123
+### Sadece hash görmek: npm run hash-password -- admin123
+
+### 3) Login
+
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "mail@gmail.com",
+  "password": "admin123"
+}

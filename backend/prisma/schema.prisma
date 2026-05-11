@@ -1,0 +1,98 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  SYSTEM_ADMIN
+  RECTOR
+  ORGANIZER
+  STUDENT
+}
+
+enum EventStatus {
+  DRAFT
+  PUBLISHED
+  CANCELLED
+}
+
+enum TicketStatus {
+  RESERVED
+  PAID
+  USED
+  REVOKED
+  CANCELLED
+}
+
+model User {
+  id             String      @id @default(cuid())
+  email          String      @unique
+  passwordHash   String
+  fullName       String?
+  role           Role
+  universityId   String?
+  university     University? @relation(fields: [universityId], references: [id], onDelete: SetNull)
+  organizedEvents Event[]    @relation("EventOrganizer")
+  tickets        Ticket[]    @relation("TicketStudent")
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  @@index([universityId])
+  @@index([role])
+}
+
+model University {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String?  @unique
+  city      String?
+  users     User[]
+  events    Event[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Event {
+  id                      String      @id @default(cuid())
+  title                   String
+  description             String?
+  venue                   String?
+  startsAt                DateTime
+  endsAt                  DateTime?
+  capacity                Int?
+  status                  EventStatus @default(DRAFT)
+  venueVerificationSecret String      @unique
+  universityId            String
+  university              University  @relation(fields: [universityId], references: [id], onDelete: Cascade)
+  organizerId             String
+  organizer               User        @relation("EventOrganizer", fields: [organizerId], references: [id], onDelete: Restrict)
+  tickets                 Ticket[]
+  createdAt               DateTime    @default(now())
+  updatedAt               DateTime    @updatedAt
+
+  @@index([universityId])
+  @@index([organizerId])
+  @@index([startsAt])
+}
+
+model Ticket {
+  id              String       @id @default(cuid())
+  status          TicketStatus @default(PAID)
+  holderQrSecret  String       @unique
+  venueVerifiedAt DateTime?
+  usedAt          DateTime?
+  eventId         String
+  event           Event        @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  studentId       String
+  student         User         @relation("TicketStudent", fields: [studentId], references: [id], onDelete: Cascade)
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  @@index([eventId])
+  @@index([studentId])
+  @@unique([eventId, studentId])
+}
